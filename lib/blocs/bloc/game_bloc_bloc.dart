@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'game_bloc_event.dart';
@@ -121,44 +123,60 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
 
-  int getBestMove(List<String> board, int gridSize, String difficulty) {
-    switch (difficulty) {
-      case 'Easy':
-        return board.indexWhere((cell) => cell == ''); // Random available move
-      case 'Medium':
-        return someBasicStrategy(board, gridSize); // Basic AI logic
-      case 'Hard':
-        return minimax(board, true, 'O'); // Optimal move using Minimax
-      default:
-        return board.indexWhere((cell) => cell == '');
-    }
-  }
-
-
-  int minimax(List<String> board, bool isMaximizing, String currentPlayer) {
-    final winner = checkWinner(board, state.gridSize);
+  int minimax(List<String> board, bool isMaximizing, String currentPlayer,
+      int gridSize, int depth) {
+    final winner = checkWinner(board, gridSize);
     if (winner != null) {
-      return winner == 'O' ? 10 : -10;
+      return winner == 'O' ? 10 - depth : depth - 10;
     }
     if (!board.contains('')) {
-      return 0;
+      return 0; // Draw
     }
 
-    int? bestScore;
+    int bestScore = isMaximizing ? -1000 : 1000;
     for (int i = 0; i < board.length; i++) {
       if (board[i] == '') {
         board[i] = currentPlayer;
-        int score =
-        minimax(board, !isMaximizing, currentPlayer == 'X' ? 'O' : 'X');
+        int score = minimax(
+          board,
+          !isMaximizing,
+          currentPlayer == 'X' ? 'O' : 'X',
+          gridSize,
+          depth + 1,
+        );
         board[i] = '';
-        if (bestScore == null ||
-            (isMaximizing ? score > bestScore : score < bestScore)) {
-          bestScore = score;
-        }
+        bestScore = isMaximizing
+            ? max(bestScore, score)
+            : min(bestScore, score);
       }
     }
-    return bestScore!;
+    return bestScore;
   }
+
+  int getBestMove(List<String> board, int gridSize, String difficulty) {
+    if (difficulty == 'Easy') {
+      return board.indexWhere((cell) => cell == ''); // Random move
+    } else if (difficulty == 'Medium') {
+      return someBasicStrategy(board, gridSize); // Intermediate AI logic
+    } else if (difficulty == 'Hard') {
+      int bestMove = -1;
+      int bestScore = -1000;
+      for (int i = 0; i < board.length; i++) {
+        if (board[i] == '') {
+          board[i] = 'O'; // Simulate AI's move
+          int score = minimax(board, false, 'X', gridSize, 0);
+          board[i] = ''; // Undo move
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = i;
+          }
+        }
+      }
+      return bestMove;
+    }
+    return board.indexWhere((cell) => cell == ''); // Default fallback
+  }
+
   int someBasicStrategy(List<String> board, int gridSize) {
     // Check if the AI can win in the current turn
     for (int i = 0; i < board.length; i++) {
