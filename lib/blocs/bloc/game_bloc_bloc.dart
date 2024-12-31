@@ -85,26 +85,41 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   List<List<int>> generateWinningPatterns(int gridSize) {
     List<List<int>> patterns = [];
 
-    // Rows
+    // Add row patterns
     for (int row = 0; row < gridSize; row++) {
-      patterns.add(
-        List.generate(gridSize, (col) => row * gridSize + col),
-      );
+      List<int> rowPattern = [];
+      for (int col = 0; col < gridSize; col++) {
+        rowPattern.add(row * gridSize + col); // Calculate the cell index
+      }
+      patterns.add(rowPattern);
     }
 
-    // Columns
+    // Add column patterns
     for (int col = 0; col < gridSize; col++) {
-      patterns.add(
-        List.generate(gridSize, (row) => row * gridSize + col),
-      );
+      List<int> colPattern = [];
+      for (int row = 0; row < gridSize; row++) {
+        colPattern.add(row * gridSize + col); // Calculate the cell index
+      }
+      patterns.add(colPattern);
     }
 
-    // Diagonals
-    patterns.add(List.generate(gridSize, (i) => i * (gridSize + 1))); // Main diagonal
-    patterns.add(List.generate(gridSize, (i) => (i + 1) * (gridSize - 1))); // Anti-diagonal
+    // Add main diagonal pattern
+    List<int> mainDiagonal = [];
+    for (int i = 0; i < gridSize; i++) {
+      mainDiagonal.add(i * (gridSize + 1)); // Main diagonal indices
+    }
+    patterns.add(mainDiagonal);
+
+    // Add anti-diagonal pattern
+    List<int> antiDiagonal = [];
+    for (int i = 1; i <= gridSize; i++) {
+      antiDiagonal.add(i * (gridSize - 1)); // Anti-diagonal indices
+    }
+    patterns.add(antiDiagonal);
 
     return patterns;
   }
+
 
   int getBestMove(List<String> board, int gridSize, String difficulty) {
     switch (difficulty) {

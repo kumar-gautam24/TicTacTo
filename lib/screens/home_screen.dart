@@ -43,25 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _playerOneController,
-              decoration: const InputDecoration(
-                labelText: 'Player 1 Name',
-                labelStyle: TextStyle(color: Colors.white70),
-              ),
-              style: const TextStyle(color: Colors.white),
-            ),
-            if (!isSinglePlayer) ...[
-              const SizedBox(height: 12),
-              TextField(
-                controller: _playerTwoController,
-                decoration: const InputDecoration(
-                  labelText: 'Player 2 Name',
-                  labelStyle: TextStyle(color: Colors.white70),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
+            SizedBox(height: 100,
+            child: Image.asset("assets/launcher.png"),),
             const SizedBox(height: 20),
             SwitchListTile(
               title: Text(
