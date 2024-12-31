@@ -6,6 +6,8 @@ class GameState {
   final bool isGameOver;
   final String? winner;
   final bool isSinglePlayer;
+  final int gridSize;
+  final String? difficulty;
 
   GameState({
     required this.board,
@@ -13,6 +15,8 @@ class GameState {
     this.isGameOver = false,
     this.winner,
     this.isSinglePlayer = false,
+    this.gridSize = 3,
+    this.difficulty = 'Easy',
   });
 
   GameState copyWith({
@@ -21,6 +25,8 @@ class GameState {
     bool? isGameOver,
     String? winner,
     bool? isSinglePlayer,
+    int? gridSize,
+    String? difficulty,
   }) {
     return GameState(
       board: board ?? this.board,
@@ -28,6 +34,8 @@ class GameState {
       isGameOver: isGameOver ?? this.isGameOver,
       winner: winner,
       isSinglePlayer: isSinglePlayer ?? this.isSinglePlayer,
+      gridSize: gridSize ?? this.gridSize,
+      difficulty: difficulty ?? this.difficulty,
     );
   }
 }

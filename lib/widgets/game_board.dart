@@ -4,21 +4,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/bloc/game_bloc_bloc.dart';
 
 class GameBoard extends StatelessWidget {
-  const GameBoard({super.key});
+  final int gridSize;
+
+  const GameBoard({super.key, required this.gridSize});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
       builder: (context, state) {
+        final totalCells = gridSize * gridSize;
+
         return Center(
           child: GridView.builder(
             shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: gridSize,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
-            itemCount: 9,
+            itemCount: totalCells,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
@@ -34,10 +38,10 @@ class GameBoard extends StatelessWidget {
                     child: Text(
                       state.board[index],
                       style: TextStyle(
-                        fontSize: 32,
+                        fontSize: gridSize < 5 ? 32 : 24, // Adjust font size for larger grids
                         fontWeight: FontWeight.bold,
                         color:
-                            state.board[index] == 'X' ? Colors.blue : Colors.red,
+                        state.board[index] == 'X' ? Colors.blue : Colors.red,
                       ),
                     ),
                   ),
