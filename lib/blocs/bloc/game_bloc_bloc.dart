@@ -8,10 +8,10 @@ part 'game_bloc_state.dart';
 class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc()
       : super(GameState(
-    board: List.filled(9, ''),
-    currentPlayer: 'X',
-    gridSize: 3,
-  )) {
+          board: List.filled(9, ''),
+          currentPlayer: 'X',
+          gridSize: 3,
+        )) {
     on<InitializeGame>((event, emit) {
       final totalCells = event.gridSize * event.gridSize;
 
@@ -39,19 +39,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           ));
         } else if (state.isSinglePlayer && state.currentPlayer == 'X') {
           // AI plays
-          final aiMove = getBestMove(
-            newBoard,
-            state.gridSize,
-            state.difficulty!,
+          Future.delayed(
+            const Duration(milliseconds: 500),
+            () {
+              final aiMove = getBestMove(
+                newBoard,
+                state.gridSize,
+                state.difficulty!,
+              );
+              newBoard[aiMove] = 'O';
+              emit(
+                state.copyWith(
+                  board: newBoard,
+                  currentPlayer: 'X',
+                  isGameOver: checkWinner(newBoard, state.gridSize) != null ||
+                      !newBoard.contains(''),
+                  winner: checkWinner(newBoard, state.gridSize),
+                ),
+              );
+            },
           );
-          newBoard[aiMove] = 'O';
-          emit(state.copyWith(
-            board: newBoard,
-            currentPlayer: 'X',
-            isGameOver:
-            checkWinner(newBoard, state.gridSize) != null || !newBoard.contains(''),
-            winner: checkWinner(newBoard, state.gridSize),
-          ));
         } else {
           emit(state.copyWith(
             board: newBoard,
@@ -84,6 +91,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
     return null;
   }
+
   List<List<int>> generateWinningPatterns(int gridSize) {
     List<List<int>> patterns = [];
 
@@ -122,7 +130,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     return patterns;
   }
 
-
   int minimax(List<String> board, bool isMaximizing, String currentPlayer,
       int gridSize, int depth) {
     final winner = checkWinner(board, gridSize);
@@ -145,9 +152,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           depth + 1,
         );
         board[i] = '';
-        bestScore = isMaximizing
-            ? max(bestScore, score)
-            : min(bestScore, score);
+        bestScore =
+            isMaximizing ? max(bestScore, score) : min(bestScore, score);
       }
     }
     return bestScore;
@@ -205,5 +211,4 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // Otherwise, pick the first available spot
     return board.indexWhere((cell) => cell == '');
   }
-
 }
